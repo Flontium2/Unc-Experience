@@ -1495,7 +1495,7 @@ print("[ Salad ]: Added functions to the env.")
 if not shared.notified then 
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Salad API Injected",
-        Text = "Powered by Xeno\ndiscord.gg/getsalad",  -- xeno server: discord.gg/getxeno
+        Text = "Injected Success",  -- xeno server: discord.gg/getxeno
         Duration = 2,
         Icon = "rbxassetid://84868819237025"
     })
