@@ -1415,7 +1415,6 @@ if not shared.vulnsm then
 			return oldlf(path)
 		end 
 	end
-	print("[ Salad ]: Vulns mitigated.")
 	shared.vulnsm = true 
 end 
 getgenv().getscripts = function() 
@@ -1491,14 +1490,7 @@ getgenv().getscriptclosure = function(module)
         return copy
     end
 end
-print("[ Salad ]: Added functions to the env.")
 if not shared.notified then 
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Salad API Injected",
-        Text = "Injected Success",  -- xeno server: discord.gg/getxeno
-        Duration = 2,
-        Icon = "rbxassetid://84868819237025"
-    })
     shared.notified = true 
 end 
 getgenv().IS_SALAD_LOADED = true
