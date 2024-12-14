@@ -1440,6 +1440,27 @@ getgenv().syn.protect_gui = function(gui)
     gui.Name = crypt.random(64)
     gui.Parent = gethui()
 end
+getgenv().getcallbackvalue = function(callback, event)
+    if type(callback) ~= "function" and (typeof(callback) ~= "Instance" or not callback[event]) then
+        error("Error")
+    end
+
+    local args = {}
+
+    if type(callback) == "function" then
+        local wrapper = function(...)
+            for i, v in ipairs({...}) do
+                table.insert(args, v)
+            end
+            callback(...)
+        end
+        return wrapper, args
+
+    elseif typeof(callback) == "Instance" then
+        return callback[event], args
+    end
+end
+
 getgenv().syn.unprotect_gui = function(gui)
     if names[gui] then
         gui.Name = names[gui].name
