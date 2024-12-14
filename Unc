@@ -1822,8 +1822,6 @@ getgenv().debug.getproto = function(f, i, e)
     end
 
     local success, proto = pcall(function()
-        -- Giả lập việc lấy prototype
-        -- Trong môi trường Roblox, ta không thể truy xuất hàm nội bộ, do đó ta trả về giá trị giả lập
         return function() return "Prototype function " .. i end
     end)
 
@@ -1840,7 +1838,6 @@ getgenv().debug.getprotos = function(f)
     end
 
     local success, protos = pcall(function()
-        -- Giả lập việc lấy danh sách các prototype
         local protoList = {}
         for i = 1, 3 do
             table.insert(protoList, function() return "Prototype function " .. i end)
