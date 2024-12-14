@@ -1457,7 +1457,11 @@ getgenv().getcallbackvalue = function(callback, event)
         return wrapper, args
 
     elseif typeof(callback) == "Instance" then
-        return callback[event], args
+        if callback.ClassName == "BindableFunction" and event == "OnInvoke" then
+            return function(...)
+                callback:Invoke(...)
+            end
+        end
     end
 end
 
