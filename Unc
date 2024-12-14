@@ -522,28 +522,34 @@ end
 
 getgenv().require = function(scr)
     assert(type(scr) == "number" or (typeof(scr) == "Instance" and scr.ClassName == "ModuleScript"), "Expected number or ModuleScript instance.")
-    
-    if type(scr) == "number" then 
+
+    if type(scr) == "number" then
         local objects = game:GetObjects('rbxassetid://' .. scr)
-        if not objects[1] then 
+        if not objects[1] then
             warn("[Error]: Require failed: invalid asset ID")
             return
         end
 
         local module = objects[1]
         if typeof(module) == "Instance" and module.ClassName == "ModuleScript" then
-            if module.Name == "MainModule" then 
-                if module.Source ~= "" then 
-                    return loadstring(module.Source)() -- Execute the script in the module
-                else 
+            if module.Name == "MainModule" then
+                if module.Source ~= "" then
+                    return loadstring(module.Source)()
+                else
                     warn("[Error]: Require failed: can't require a module script with no code.")
                 end
-            else 
+            else
                 warn("[Error]: Require failed: invalid asset ID or missing MainModule.")
             end
         end
+    elseif typeof(scr) == "Instance" and scr.ClassName == "ModuleScript" then
+        if scr.Source ~= "" then
+            return loadstring(scr.Source)()
+        else
+            warn("[Error]: Require failed: can't require a module script with no code.")
+        end
     else
-        warn("[Error]: Invalid argument: expected number or ModuleScript.")
+        warn("[Error]: Invalid argument: expected number or ModuleScript instance.")
     end
 end
 
