@@ -520,37 +520,26 @@ getgenv().HttpGet = function(url, rr)
 	return game:GetService("HttpService"):JSONDecode(result.Body)
 end	
 
-getgenv().require = function(scr)
-    assert(type(scr) == "number" or (typeof(scr) == "Instance" and scr.ClassName == "ModuleScript"), "Expected number or ModuleScript instance.")
-
-    if type(scr) == "number" then
-        local objects = game:GetObjects('rbxassetid://' .. scr)
-        if not objects[1] then
-            warn("[Error]: Require failed: invalid asset ID")
-            return
-        end
-
-        local module = objects[1]
-        if typeof(module) == "Instance" and module.ClassName == "ModuleScript" then
-            if module.Name == "MainModule" then
-                if module.Source ~= "" then
-                    return loadstring(module.Source)()
-                else
-                    warn("[Error]: Require failed: can't require a module script with no code.")
-                end
-            else
-                warn("[Error]: Require failed: invalid asset ID or missing MainModule.")
-            end
-        end
-    elseif typeof(scr) == "Instance" and scr.ClassName == "ModuleScript" then
-        if scr.Source ~= "" then
-            return loadstring(scr.Source)()
-        else
-            warn("[Error]: Require failed: can't require a module script with no code.")
-        end
-    else
-        warn("[Error]: Invalid argument: expected number or ModuleScript instance.")
-    end
+getgenv().require = function(scr) -- not mine
+	assert(type(scr) == "number" or (typeof(scr) == "Instance" and scr.ClassName == "ModuleScript"), "Expected")
+	if (type(scr) == "number") then 
+		if not game:GetObjects('rbxassetid://' .. scr)[1] then 
+			warn("[ Salad ]: Require failed: invalid asset ID")
+			return 
+		end
+		if typeof(game:GetObjects('rbxassetid://' .. scr)[1]) == "Instance" and game:GetObjects('rbxassetid://' .. scr)[1].ClassName == "ModuleScript" then
+			if game:GetObjects('rbxassetid://' .. scr)[1].Name == "MainModule" then 
+				if game:GetObjects('rbxassetid://' .. scr)[1].Source ~= "" then 
+					return loadstring(game:GetObjects('rbxassetid://' .. scr)[1].Source)()
+				else 
+					warn("[ Salad ]: Require failed: cant require a modulescript with no code")
+				end
+			else 
+				warn("[ Salad ]: Require failed: require asset id failed")
+			end
+		end
+		return
+	end
 end
 
 getgenv().getrenv = function()
@@ -1376,6 +1365,31 @@ getgenv().setreadonly = function(taable, boolean)
         getgenv()[taable] = {}
     end
 end
+
+getgenv().WebSocket.connect = function(url)
+    if type(url) ~= "string" then
+        error("Invalid: Must be a string.")
+        return nil
+    end
+
+    local WebSocket = syn.websocket.connect(url)
+    if not WebSocket then
+        error("Failed to connect to WebSocket.")
+        return nil
+    end
+
+    WebSocket.OnMessage:Connect(function(Msg)
+        print(Msg)
+    end)
+
+    WebSocket.OnClose:Connect(function()
+        print("WebSocket connection closed.")
+    end)
+
+    return WebSocket
+end
+
+
 getgenv().makewriteable = function(taable)
     return getgenv().setreadonly(taable, false)
 end
