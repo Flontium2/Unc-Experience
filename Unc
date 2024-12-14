@@ -1527,6 +1527,15 @@ getgenv().salad.disable_internal = function()
         error("[ Salad ]: Internal not found")
     end 
 end 
+getgenv().getcallingscript = function()
+    local info = debug.getinfo(2, "S")
+    if info then
+        return info.source
+    else
+        return "No calling script found"
+    end
+end
+
 getgenv().salad.dex = function()
 	local suc, rec = pcall(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Insalad/ApiShit/refs/heads/main/Dex"))()
