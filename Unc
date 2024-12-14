@@ -1088,8 +1088,6 @@ getgenv().isexecutorclosure = function(a)
     return result or islclosure(a)
 end
 getgenv().get_calling_script = getcallingscript
-getgenv().require = require
-getgenv().hookfunction = hookfunction
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
 getgenv().getconnections = nil -- fake function outta here
