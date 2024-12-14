@@ -1,3 +1,4 @@
+
 --[[
 
  ░▒▓███████▓▒░░▒▓██████▓▒░░▒▓█▓▒░       ░▒▓██████▓▒░░▒▓███████▓▒░  
@@ -46,7 +47,6 @@ local renv = {
 	select = select, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall,
 	pairs = pairs, next = next, ipairs = ipairs, newproxy = newproxy, rawequal = rawequal, rawget = rawget,
 	rawset = rawset, rawlen = rawlen, gcinfo = gcinfo,
-	hookfunction = hookfunction
 
 	coroutine = {
 		create = coroutine.create, resume = coroutine.resume, running = coroutine.running,
@@ -95,14 +95,13 @@ local renv = {
 	},
 
 	debug = {
-		traceback = debug.traceback, profilebegin = debug.profilebegin, profileend = debug.profileend, info = debug.info, getconstant = debug.getconstant, getupvalue = debug.getupvalue
+		traceback = debug.traceback, profilebegin = debug.profilebegin, profileend = debug.profileend, info = debug.info 
 	},
 
 	game = game, workspace = workspace, Game = game, Workspace = workspace,
 
 	getmetatable = getmetatable, setmetatable = setmetatable
 }
-getgenv().debug = getgenv().debug or {}
 table.freeze(renv)
 local DrawingFonts = {
 	[0] = Font.fromEnum(Enum.Font.Roboto),
@@ -1682,30 +1681,20 @@ getgenv().getfflag = function(fn)
 end
 getgenv().hookfunction = function(original, hook)
     if type(original) ~= "function" then
-        error("The first argument must be a function (original function).")
+        error("The first arg must be a function (original func).")
     end
     if type(hook) ~= "function" then
-        error("The second argument must be a function (hook).")
+        error("The second arg must be a function (hook).")
     end
-
     local info = debug.getinfo(original)
     local name = info and info.name or tostring(original)
-    getgenv().ogfs = getgenv().ogfs or {}
     getgenv().ogfs[name] = original 
-
     local hooked = function(...)
-        local success, result = pcall(hook, ...)
-        if not success then
-            warn("Hook function failed with error:", result)
-            return false
-        end
-        return result
+        return hook(...)
     end
-
-    getgenv()[name] = hooked
+    getgenv()[name] = hooked  
     return hooked
 end
-
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
         error("The argument must be a function (original func).")
@@ -1766,44 +1755,9 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-local functionUpvalues = {}
-
-getgenv().debug.getupvalue = function(f, i)
-    -- Check if the function and upvalue exist
-    if not functionUpvalues[f] then
-        return "Function not found"
-    end
-    -- Return the specific upvalue or a message if invalid
-    return functionUpvalues[f][i] or "Invalid index"
-end
-
-getgenv().debug.getconstant = function(func, index)
-    if type(func) ~= "function" then
-        return "Invalid input: 'func' must be a function."
-    end
-
-    local constants = {}
-    local success, result = pcall(function()
-        local i = 1
-            -- Get the upvalue (simulating constants)
-            local constant = debug.getupvalue(func, i)
-            if not constant then break end
-            constants[#constants + 1] = constant
-            i = i + 1
-            task.wait()
-    end)
-
-    if not success then
-        return "Error occurred while retrieving constants."
-    end
-
-    if index then
-        return constants[index] or "Index out of range."
-    else
-        return constants
-    end
-end
-
+getgenv().debug.getconstant = function(f, i) 
+    return "Not Implemented"
+end 
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
 end 
@@ -1816,13 +1770,9 @@ end
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
-local functionUpvalues = {}
-
-getgenv().debug.getupvalue = function(f, i)
-    functionUpvalues[f] = functionUpvalues[f] or {}
-    return functionUpvalues[f][i] or "Invalid function or index"
-end
-
+getgenv().debug.getupvalue = function(f, i) 
+    return "Not Implemented"
+end 
 getgenv().debug.getupvalues = function(f) 
     return "Not Implemented"
 end 
@@ -2026,9 +1976,20 @@ if not shared.vulnsm then
 		end
 		oldwr(fname, data)  
 	end
+	print("[ Salad ]: Vulns mitigated.")
 	shared.vulnsm = true 
 end 
 repeat task.wait()
-	shared.notified = true
+    local s, r = pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Salad Loaded",
+            Text = "Powered by Xeno\ndiscord.gg/getsalad",
+            Duration = 2,
+            Icon = "rbxassetid://84868819237025"
+        })
+    end)
+    if s then
+        shared.notified = true
+    end
 until shared.notified
 getgenv().IS_SALAD_LOADED = true
