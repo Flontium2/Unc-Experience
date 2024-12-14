@@ -634,6 +634,21 @@ getgenv().join = function(placeID: number, jobID: string)
 end
 
 --[[ no getconnections moment
+getgenv().getconnections = function(obj)
+    if not obj then
+        return {}
+    end
+
+    local connections = {}
+    if obj.Connected then
+        for _, conn in ipairs(obj:GetConnections()) do
+            table.insert(connections, conn)
+        end
+    end
+
+    return connections
+end
+
 getgenv().firesignal = function(instance: Instance, signaln: string, args: any)
     if instance and signaln then
         local signal = instance[signaln]
@@ -1811,7 +1826,6 @@ getgenv().get_calling_script = getcallingscript
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = nil -- fake function outta here
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
