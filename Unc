@@ -94,7 +94,7 @@ local renv = {
 	},
 
 	debug = {
-		traceback = debug.traceback, profilebegin = debug.profilebegin, profileend = debug.profileend, info = debug.info 
+		traceback = debug.traceback, profilebegin = debug.profilebegin, profileend = debug.profileend, info = debug.info, getconstant = debug.getconstant
 	},
 
 	game = game, workspace = workspace, Game = game, Workspace = workspace,
