@@ -1361,8 +1361,12 @@ getgenv().setreadonly = function(taable, boolean)
     if boolean then
         table.freeze(taable)
     else
-		getgenv()[taable] = nil 
-        getgenv()[taable] = {}
+        if not table.isfrozen(taable) then
+            getgenv()[taable] = nil
+            getgenv()[taable] = {}
+        else
+            warn("Cannot modify a table")
+        end
     end
 end
 
