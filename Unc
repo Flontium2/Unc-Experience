@@ -1904,10 +1904,9 @@ getgenv().getrawmetatable = function(obj)
     return metatable
 end
 
-getgenv().debug.getnamecallmethod = function()
+getgenv().getnamecallmethod = function()
     return debug.getinfo(2, "n").name or "Unknown method"
 end
-
 -- aliases
 getgenv().get_calling_script = getcallingscript 
 getgenv().isreadable = isreadonly 
