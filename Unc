@@ -46,6 +46,7 @@ local renv = {
 	select = select, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall,
 	pairs = pairs, next = next, ipairs = ipairs, newproxy = newproxy, rawequal = rawequal, rawget = rawget,
 	rawset = rawset, rawlen = rawlen, gcinfo = gcinfo,
+	hookfunction = hookfunction
 
 	coroutine = {
 		create = coroutine.create, resume = coroutine.resume, running = coroutine.running,
@@ -101,6 +102,7 @@ local renv = {
 
 	getmetatable = getmetatable, setmetatable = setmetatable
 }
+getgenv().debug = getgenv().debug or {}
 table.freeze(renv)
 local DrawingFonts = {
 	[0] = Font.fromEnum(Enum.Font.Roboto),
@@ -1680,20 +1682,30 @@ getgenv().getfflag = function(fn)
 end
 getgenv().hookfunction = function(original, hook)
     if type(original) ~= "function" then
-        error("The first arg must be a function (original func).")
+        error("The first argument must be a function (original function).")
     end
     if type(hook) ~= "function" then
-        error("The second arg must be a function (hook).")
+        error("The second argument must be a function (hook).")
     end
+
     local info = debug.getinfo(original)
     local name = info and info.name or tostring(original)
+    getgenv().ogfs = getgenv().ogfs or {}
     getgenv().ogfs[name] = original 
+
     local hooked = function(...)
-        return hook(...)
+        local success, result = pcall(hook, ...)
+        if not success then
+            warn("Hook function failed with error:", result)
+            return false
+        end
+        return result
     end
-    getgenv()[name] = hooked  
+
+    getgenv()[name] = hooked
     return hooked
 end
+
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
         error("The argument must be a function (original func).")
