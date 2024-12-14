@@ -1756,29 +1756,29 @@ end
 -- Not implemented lib: 
 getgenv().debug.getconstant = function(func, index)
     if type(func) ~= "function" then
-        error("Invalid input: 'func' must be a function.")
+        return "Invalid input: 'func' must be a function."
     end
 
+    local constants = {}
     local success, result = pcall(function()
-        local constants = {}
         local i = 1
         while true do
-            local name, value = debug.getupvalue(func, i)
-            if not name then break end
-            constants[#constants + 1] = value
+            local constant = debug.getupvalue(func, i)
+            if not constant then break end
+            constants[#constants + 1] = constant
             i = i + 1
         end
-        if index then
-            return constants[index] or "Index out of range."
-        end
-        return constants
     end)
 
     if not success then
-        return "Unable to retrieve constants: " .. tostring(result)
+        return "Error occurred while retrieving constants."
     end
 
-    return result
+    if index then
+        return constants[index] or "Index out of range."
+    else
+        return constants
+    end
 end
 
 getgenv().debug.getconstants = function(f) 
