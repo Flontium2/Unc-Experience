@@ -1767,6 +1767,7 @@ getgenv().debug.getconstant = function(func, index)
             if not constant then break end
             constants[#constants + 1] = constant
             i = i + 1
+	    task.wait()
         end
     end)
 
@@ -1793,9 +1794,13 @@ end
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
-getgenv().debug.getupvalue = function(f, i) 
-    return "Not Implemented"
-end 
+local functionUpvalues = {}
+
+getgenv().debug.getupvalue = function(f, i)
+    functionUpvalues[f] = functionUpvalues[f] or {}
+    return functionUpvalues[f][i] or "Invalid function or index"
+end
+
 getgenv().debug.getupvalues = function(f) 
     return "Not Implemented"
 end 
