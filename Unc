@@ -1754,9 +1754,33 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstant = function(f, i) 
-    return "Not Implemented"
-end 
+getgenv().debug.getconstant = function(func, index)
+    if type(func) ~= "function" then
+        error("Invalid input: 'func' must be a function.")
+    end
+
+    local success, result = pcall(function()
+        local constants = {}
+        local i = 1
+        while true do
+            local name, value = debug.getupvalue(func, i)
+            if not name then break end
+            constants[#constants + 1] = value
+            i = i + 1
+        end
+        if index then
+            return constants[index] or "Index out of range."
+        end
+        return constants
+    end)
+
+    if not success then
+        return "Unable to retrieve constants: " .. tostring(result)
+    end
+
+    return result
+end
+
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
 end 
