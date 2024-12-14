@@ -1754,6 +1754,17 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
+local functionUpvalues = {}
+
+getgenv().debug.getupvalue = function(f, i)
+    -- Check if the function and upvalue exist
+    if not functionUpvalues[f] then
+        return "Function not found"
+    end
+    -- Return the specific upvalue or a message if invalid
+    return functionUpvalues[f][i] or "Invalid index"
+end
+
 getgenv().debug.getconstant = function(func, index)
     if type(func) ~= "function" then
         return "Invalid input: 'func' must be a function."
@@ -1762,13 +1773,12 @@ getgenv().debug.getconstant = function(func, index)
     local constants = {}
     local success, result = pcall(function()
         local i = 1
-        while true do
+            -- Get the upvalue (simulating constants)
             local constant = debug.getupvalue(func, i)
             if not constant then break end
             constants[#constants + 1] = constant
             i = i + 1
-	    task.wait()
-        end
+            task.wait()
     end)
 
     if not success then
