@@ -1366,9 +1366,14 @@ getgenv().setreadonly = function(taable, boolean)
     end
 end
 
-getgenv().WebSocket.connect = function(url)
+getgenv().WebSocket = function(url)
     if type(url) ~= "string" then
-        error("Invalid: Must be a string.")
+        error("Invalid: URL must be a string.")
+        return nil
+    end
+
+    if not syn.websocket or not syn.websocket.connect then
+        error("WebSocket is not supported in this environment.")
         return nil
     end
 
@@ -1382,6 +1387,7 @@ getgenv().WebSocket.connect = function(url)
         print(Msg)
     end)
 
+    -- Event listener for WebSocket connection closure
     WebSocket.OnClose:Connect(function()
         print("WebSocket connection closed.")
     end)
