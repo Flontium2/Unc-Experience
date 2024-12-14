@@ -1366,36 +1366,6 @@ getgenv().setreadonly = function(taable, boolean)
     end
 end
 
-getgenv().WebSocket = function(url)
-    if type(url) ~= "string" then
-        error("Invalid: URL must be a string.")
-        return nil
-    end
-
-    if not syn.websocket or not syn.websocket.connect then
-        error("WebSocket is not supported in this environment.")
-        return nil
-    end
-
-    local WebSocket = syn.websocket.connect(url)
-    if not WebSocket then
-        error("Failed to connect to WebSocket.")
-        return nil
-    end
-
-    WebSocket.OnMessage:Connect(function(Msg)
-        print(Msg)
-    end)
-
-    -- Event listener for WebSocket connection closure
-    WebSocket.OnClose:Connect(function()
-        print("WebSocket connection closed.")
-    end)
-
-    return WebSocket
-end
-
-
 getgenv().makewriteable = function(taable)
     return getgenv().setreadonly(taable, false)
 end
