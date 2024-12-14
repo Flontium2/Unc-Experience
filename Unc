@@ -1891,6 +1891,23 @@ getgenv().clonefunction = newcclosure(function(func)
     setfenv(newfunc, getfenv(func))
     return newfunc
 end)
+getgenv().getrawmetatable = function(obj)
+    if obj == nil then
+        return "Invalid object"
+    end
+
+    local metatable = getmetatable(obj)
+    if not metatable then
+        return "Object doesn't have a metatable"
+    end
+
+    return metatable
+end
+
+getgenv().debug.getnamecallmethod = function()
+    return debug.getinfo(2, "n").name or "Unknown method"
+end
+
 -- aliases
 getgenv().get_calling_script = getcallingscript 
 getgenv().isreadable = isreadonly 
