@@ -1,4 +1,3 @@
-
 --[[
 
  ░▒▓███████▓▒░░▒▓██████▓▒░░▒▓█▓▒░       ░▒▓██████▓▒░░▒▓███████▓▒░  
@@ -1361,11 +1360,10 @@ getgenv().setreadonly = function(taable, boolean)
     if boolean then
         table.freeze(taable)
     else
-	getgenv()[taable] = nil 
+		getgenv()[taable] = nil 
         getgenv()[taable] = {}
     end
 end
-
 getgenv().makewriteable = function(taable)
     return getgenv().setreadonly(taable, false)
 end
@@ -1436,7 +1434,6 @@ getgenv().syn.protect_gui = function(gui)
     gui.Name = crypt.random(64)
     gui.Parent = gethui()
 end
-
 getgenv().syn.unprotect_gui = function(gui)
     if names[gui] then
         gui.Name = names[gui].name
@@ -1524,15 +1521,6 @@ getgenv().salad.disable_internal = function()
         error("[ Salad ]: Internal not found")
     end 
 end 
-getgenv().getcallingscript = function()
-    local info = debug.getinfo(2, "S")
-    if info then
-        return info.source
-    else
-        return "No calling script found"
-    end
-end
-
 getgenv().salad.dex = function()
 	local suc, rec = pcall(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/Insalad/ApiShit/refs/heads/main/Dex"))()
@@ -1781,21 +1769,18 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstant = function(f, i)
-	return "Not Implemented"
-end
-
-getgenv().debug.getconstants = function(f)
-	return "Not Implemented"
-end
-getgenv().debug.getproto = function(f, i, e)
-	return "Not Implemented"
-end
-
-getgenv().debug.getprotos = function(f)
-	return "Not Implemented"
-end
-
+getgenv().debug.getconstant = function(f, i) 
+    return "Not Implemented"
+end 
+getgenv().debug.getconstants = function(f) 
+    return "Not Implemented"
+end 
+getgenv().debug.getproto = function(f, i, e) 
+    return "Not Implemented"
+end 
+getgenv().debug.getprotos = function(f) 
+    return "Not Implemented"
+end 
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
@@ -1835,27 +1820,12 @@ getgenv().clonefunction = newcclosure(function(func)
     setfenv(newfunc, getfenv(func))
     return newfunc
 end)
-getgenv().getrawmetatable = function(obj)
-    if obj == nil then
-        return "Invalid object"
-    end
-
-    local metatable = getmetatable(obj)
-    if not metatable then
-        return "Object doesn't have a metatable"
-    end
-
-    return metatable
-end
-
-getgenv().getnamecallmethod = function()
-    return debug.getinfo(2, "n").name or "Unknown method"
-end
 -- aliases
 getgenv().get_calling_script = getcallingscript 
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
+getgenv().getconnections = nil -- fake function outta here
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
@@ -2022,16 +1992,6 @@ if not shared.vulnsm then
 	shared.vulnsm = true 
 end 
 repeat task.wait()
-    local s, r = pcall(function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Salad Loaded",
-            Text = "Powered by Xeno\ndiscord.gg/getsalad",
-            Duration = 2,
-            Icon = "rbxassetid://84868819237025"
-        })
-    end)
-    if s then
         shared.notified = true
-    end
 until shared.notified
 getgenv().IS_SALAD_LOADED = true
