@@ -1708,13 +1708,12 @@ getgenv().getfflag = function(fn)
 end
 
 function getgenv().hookfunction(old, hook)
-    return function(...)
-        if debug.getinfo(2, "f").func == old then
-            return hook(...)
-        else
-            return old(...)
-        end
+    local meta = debug.getmetatable(old) or {}
+    meta.__call = function(_, ...)
+        return hook(...)
     end
+    debug.setmetatable(old, meta)
+    return old
 end
 
 getgenv().restorefunction = function(original)
