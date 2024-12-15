@@ -633,16 +633,20 @@ getgenv().join = function(placeID: number, jobID: string)
 end
 
 --[[ no getconnections moment
-getgenv().getconnections = function(obj)
-    if not obj then
-        return {}
+getgenv().getconnections = function(signal)
+    if signal then
+        error("Expected an argument.")
     end
 
     local connections = {}
-    if obj.Connected then
-        for _, conn in ipairs(obj:GetConnections()) do
+    local success, result = pcall(function()
+        for _, conn in ipairs(debug.getconnections(signal)) do
             table.insert(connections, conn)
         end
+    end)
+
+    if not success then
+        warn("[getconnections]: Unable to retrieve connections. Exploit may not support this.")
     end
 
     return connections
