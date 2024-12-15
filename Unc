@@ -1708,12 +1708,15 @@ getgenv().getfflag = function(fn)
 end
 
 function getgenv().hookfunction(old, hook)
-    local funcName = debug.getinfo(old).name
-    getgenv()[funcName] = function(...)
-        return hook(...)
+    return function(...)
+        if debug.getinfo(2, "f").func == old then
+            return hook(...)
+        else
+            return old(...)
+        end
     end
-    return old
 end
+
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
         error("The argument must be a function (original func).")
