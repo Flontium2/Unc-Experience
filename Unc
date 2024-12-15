@@ -1490,8 +1490,8 @@ getgenv().getcallbackvalue = function(input)
         end
     end
     
-    if typeof(input) == "Instance" and input:IsA("BindableFunction") and typeof(input.OnInvoke) == "function" then
-        local success, result = pcall(input.OnInvoke, input)
+    if typeof(input) == "Instance" and input:IsA("BindableFunction") then
+        local success, result = pcall(function() return input:Invoke() end)
         if success then
             return result
         else
@@ -1503,7 +1503,6 @@ getgenv().getcallbackvalue = function(input)
     warn("[Exp]: Invalid input, expected function or BindableFunction")
     return nil
 end
-
 
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
