@@ -1693,12 +1693,12 @@ getgenv().getfflag = function(fn)
     end
 end
 
-getgenv().hookfunction = function(func, rep)
-	for i,v in pairs(getfenv()) do
-		if v == func then
-			getfenv()[i] = rep
-		end
-	end
+function getgenv().hookfunction(old, hook)
+    local funcName = debug.getinfo(old).name
+    getgenv()[funcName] = function(...)
+        return hook(...)
+    end
+    return old
 end
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
