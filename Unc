@@ -1460,6 +1460,22 @@ getgenv().syn.secure_call = function(func)
 		warn("[ Syn Secure Call ]: "..tostring(rec))
 	end 
 end
+getgenv().gethui = function()
+	local s, H = pcall(function()
+		return game:GetService("CoreGui").RobloxGui
+	end)
+	if H then
+		if not hui.Parent then
+			hui.Parent = H.Parent
+		end
+		return hui
+	else
+		if not hui.Parent then
+			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+		end
+	end
+	return hui
+end
 getgenv().getprotecteduis = function()
     return protecteduis
 end
