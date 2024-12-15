@@ -1479,6 +1479,32 @@ end
 getgenv().getprotecteduis = function()
     return protecteduis
 end
+getgenv().getcallbackvalue = function(input)
+    if type(input) == "function" then
+        local success, result = pcall(input)
+        if success then
+            return result
+        else
+            warn("[Exp]: getcallbackvalue failed with error: " .. result)
+            return nil
+        end
+    end
+    
+    if typeof(input) == "Instance" and input:IsA("BindableFunction") and typeof(input.OnInvoke) == "function" then
+        local success, result = pcall(input.OnInvoke, input)
+        if success then
+            return result
+        else
+            warn("[Exp]: OnInvoke failed with error: " .. result)
+            return nil
+        end
+    end
+    
+    warn("[Exp]: Invalid input, expected function or BindableFunction")
+    return nil
+end
+
+
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
