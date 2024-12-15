@@ -1503,7 +1503,7 @@ getgenv().getcallbackvalue = function(input)
     warn("[Exp]: Invalid input, expected function or BindableFunction")
     return nil
 end
-
+getgenv().getcallbackvalue = getcallbackvalue
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
@@ -1782,7 +1782,7 @@ getgenv().hookmetamethod = newcclosure(function(object, method, callback)
         return originalMethod
     end
 end)
-
+getgenv().hookmetamethod = hookmetamethod
 getgenv().hookfunction = hookfunction
 
 getgenv().restorefunction = function(original)
