@@ -555,29 +555,26 @@ end
 local hiddenProperties = {}
 
 getgenv().sethiddenproperty = function(instance, property, value)
-    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ")
-    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ")
-
+    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
+    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
+    
     if property == "size_xml" and instance:IsA("Fire") then
-        if not getgenv().hiddenProperties then
-            getgenv().hiddenProperties = {}
+        if not hiddenProperties[instance] then
+            hiddenProperties[instance] = {}
         end
-        if not getgenv().hiddenProperties[instance] then
-            getgenv().hiddenProperties[instance] = {}
-        end
-        getgenv().hiddenProperties[instance][property] = value
+        hiddenProperties[instance][property] = value
         return true
     end
-
-    local success, result = pcall(function()
+    
+    local success = pcall(function()
         instance[property] = value
     end)
-
+    
     if success then
-        return true
+        return false
     end
-
-    error("Unable to set property '" .. property .. "' on " .. instance.ClassName, 2)
+    
+    error("Unable to set hidden property '" .. property .. "' on " .. instance.ClassName, 2)
 end
 
 getgenv().getdevice = function()
@@ -1506,6 +1503,7 @@ getgenv().getcallbackvalue = function(input)
     warn("[Exp]: Invalid input, expected function or BindableFunction")
     return nil
 end
+getgenv().getcallbackvalue = getcallbackvalue
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
