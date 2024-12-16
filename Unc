@@ -1760,30 +1760,26 @@ getgenv().hookfunction = newcclosure(function(originalFunction, callback)
 
     return hookedFunction
 end)
-getgenv().hookmetamethod = newcclosure(function(object, method, callback)
-    assert(type(object) == "table" or type(object) == "userdata", "Expected a table or userdata as the first argument")
-    assert(type(method) == "string", "Expected a string as the second argument")
-    assert(type(callback) == "function", "Expected a function as the third argument")
-
-    local meta = getrawmetatable(object)
-    local originalMethod = meta and meta[method]
-    
-    if not originalMethod then
-        error("The specified method does not exist in the metatable")
-    end
-
-    if not isreadonly(meta) then
-        meta[method] = callback
-        return originalMethod
-    else
-        setreadonly(meta, false)
-        meta[method] = callback
-        setreadonly(meta, true)
-        return originalMethod
-    end
+getgenv().hookmetamethod = newcclosure(function(obj, method, func)
+      return hookfunction(getrawmetatable(obj)[method], func)
 end)
-getgenv().hookmetamethod = hookmetamethod
-getgenv().hookfunction = hookfunction
+
+getgenv().getrawmetatable = function(obj)
+    assert(type(obj) == "table" or typeof(obj) == "Instance", "Expected a table or Instance as input")
+
+    if typeof(obj) == "Instance" then
+        local mt = getmetatable(obj)
+        if mt then
+            return mt
+        else
+            error("Instance does not have a metatable")
+        end
+    elseif type(obj) == "table" then
+        return getmetatable(obj)
+    else
+        error("Unsupported type")
+    end
+end
 
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
