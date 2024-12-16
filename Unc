@@ -554,7 +554,7 @@ getgenv().gethiddenproperty = function(instance, property)
 end
 local hiddenProperties = {}
 
-function getgenv().sethiddenproperty(instance, property, value)
+getgenv().sethiddenproperty = function(instance, property, value)
     assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
     assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
     
@@ -580,7 +580,30 @@ end
 getgenv().getdevice = function()
     return tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
 end 
+getgenv().sethiddenproperty = sethiddenproperty
 
+getgenv().getnamecallmethod = function(obj)
+    assert(typeof(obj) == "Instance" or type(obj) == "table", "Expected an Instance or table")
+
+    local mt = getmetatable(obj)
+
+    if not mt then
+        error("No metatable found for this object")
+    end
+
+    local originalNamecall = mt.__namecall
+    if not originalNamecall then
+        error("No __namecall metamethod found for this object")
+    end
+
+    mt.__namecall = function(self, ...)
+        local methodName = debug.getinfo(2, "n").name
+        return methodName
+    end
+
+    return originalNamecall
+end
+getgenv().getnamecallmethod = getnamecallmethod
 getgenv().getping = function(suffix: boolean)
     local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
     local pingstr = rawping:sub(1, #rawping - 7)
