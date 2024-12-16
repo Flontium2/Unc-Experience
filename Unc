@@ -545,36 +545,42 @@ getgenv().getrenv = function()
     return renv 
 end 
 
-getgenv().gethiddenproperty = function(instance, property) 
-	local instanceprs = hiddenprs[instance]
-	if instanceprs and instanceprs[property] then
-		return instanceprs[property], true
-	end
-	return oldghpr(instance, property)
+getgenv().gethiddenproperty = function(instance, property)
+    assert(typeof(instance) == "Instance", "invalid argument #1 to 'gethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ")
+    assert(type(property) == "string", "invalid argument #2 to 'gethiddenproperty' (string expected, got " .. type(property) .. ") ")
+
+    if getgenv().hiddenProperties and getgenv().hiddenProperties[instance] then
+        return getgenv().hiddenProperties[instance][property]
+    end
+
+    return instance[property]
 end
 local hiddenProperties = {}
 
 getgenv().sethiddenproperty = function(instance, property, value)
-    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
-    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
-    
+    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ")
+    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ")
+
     if property == "size_xml" and instance:IsA("Fire") then
-        if not hiddenProperties[instance] then
-            hiddenProperties[instance] = {}
+        if not getgenv().hiddenProperties then
+            getgenv().hiddenProperties = {}
         end
-        hiddenProperties[instance][property] = value
+        if not getgenv().hiddenProperties[instance] then
+            getgenv().hiddenProperties[instance] = {}
+        end
+        getgenv().hiddenProperties[instance][property] = value
         return true
     end
-    
-    local success = pcall(function()
+
+    local success, result = pcall(function()
         instance[property] = value
     end)
-    
+
     if success then
-        return false
+        return true
     end
-    
-    error("Unable to set hidden property '" .. property .. "' on " .. instance.ClassName, 2)
+
+    error("Unable to set property '" .. property .. "' on " .. instance.ClassName, 2)
 end
 
 getgenv().getdevice = function()
