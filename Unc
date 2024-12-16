@@ -545,16 +545,14 @@ getgenv().getrenv = function()
     return renv 
 end 
 
-getgenv().gethiddenproperty = function(instance, property)
-    assert(typeof(instance) == "Instance", "invalid argument #1 to 'gethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ")
-    assert(type(property) == "string", "invalid argument #2 to 'gethiddenproperty' (string expected, got " .. type(property) .. ") ")
-
-    if getgenv().hiddenProperties and getgenv().hiddenProperties[instance] then
-        return getgenv().hiddenProperties[instance][property]
-    end
-
-    return instance[property]
+getgenv().gethiddenproperty = function(instance, property) 
+	local instanceprs = hiddenprs[instance]
+	if instanceprs and instanceprs[property] then
+		return instanceprs[property], true
+	end
+	return oldghpr(instance, property)
 end
+
 local hiddenProperties = {}
 
 getgenv().sethiddenproperty = function(instance, property, value)
@@ -603,7 +601,7 @@ getgenv().getnamecallmethod = function(obj)
 
     mt.__namecall = function(self, ...)
         local methodName = debug.getinfo(2, "n").name
-        return methodName
+        return methodName  -- Return the method name
     end
 
     return originalNamecall
@@ -1788,9 +1786,35 @@ getgenv().hookfunction = newcclosure(function(originalFunction, callback)
 
     return hookedFunction
 end)
-getgenv().hookmetamethod = newcclosure(function(obj, method, func)
-      return hookfunction(getrawmetatable(obj)[method], func)
-end)
+getgenv().hookmetamethod = function(obj, methodName, hook)
+    assert(type(obj) == "table", "Expected a table")
+    assert(type(methodName) == "string", "Expected a string for methodName")
+    assert(type(hook) == "function", "Expected a function for hook")
+
+    local mt = getmetatable(obj)
+    if not mt then
+        error("No metatable found for this object")
+    end
+
+    if mt.__metatable then
+        error("The metatable is locked, cannot hook the method")
+    end
+
+    local originalMethod = mt[methodName]
+    if not originalMethod then
+        error("No method named '" .. methodName .. "' in the metatable")
+    end
+
+    mt[methodName] = function(self, ...)
+        local result = hook(self, ...)
+        if result ~= nil then
+            return result
+        end
+        return originalMethod(self, ...)
+    end
+
+    return originalMethod
+end
 
 getgenv().getrawmetatable = function(obj)
     assert(type(obj) == "table" or typeof(obj) == "Instance", "Expected a table or Instance as input")
