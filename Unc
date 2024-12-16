@@ -1844,10 +1844,9 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstant = function(func, index)
-    local constant = debug.getconstant(func, index)
-    return constant
-end
+getgenv().debug.getconstant = function(f, i) 
+    return "Not Implemented"
+end 
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
 end 
@@ -1860,11 +1859,9 @@ end
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
-getgenv().debug.getupvalue = function(func, index)
-    local upvalueName, upvalueValue = debug.getupvalue(func, index)
-    return upvalueName, upvalueValue
-end
-
+getgenv().debug.getupvalue = function(f, i) 
+    return "Not Implemented"
+end 
 getgenv().debug.getupvalues = function(f) 
     return "Not Implemented"
 end 
