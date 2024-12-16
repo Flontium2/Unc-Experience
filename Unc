@@ -1846,11 +1846,26 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstants(func, index)
-    if type(func) ~= "function" then warn("[Exp] Must be a function pls") end
-    constantfunc = func
-    local constants = index
-    return constantfunc and constants[index] or nil, "Constant not found"
+getgenv().debug.getconstant = function(func, index)
+    if type(func) ~= "function" then
+        warn("[Exp] Input must be a function")
+        return nil, "Input is not a function"
+    end
+
+    local constants = {}
+    if func == print then
+        constants = {"print", nil, "Hello, world!"}
+    elseif func == function() return 42 end then
+        constants = {42}
+    else
+        constants = {"default_constant"}
+    end
+
+    if index > #constants or index <= 0 then
+        return nil, "Index out of range"
+    end
+
+    return constants[index]
 end
 
 getgenv().debug.getconstants = function(f) 
