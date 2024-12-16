@@ -1505,29 +1505,6 @@ getgenv().getcallbackvalue = function(input)
 end
 getgenv().getcallbackvalue = getcallbackvalue
 
-getgenv().WebSocket.connect = function(url)
-    if type(url) ~= "string" then
-        error("Invalid url: Must be a string.")
-        return nil
-    end
-
-    local WebSocket = syn.websocket.connect(url)
-    if not WebSocket then
-        error("Failed to connect to WebSocket.")
-        return nil
-    end
-
-    WebSocket.OnMessage:Connect(function(Msg)
-        print(Msg)
-    end)
-
-    WebSocket.OnClose:Connect(function()
-        print("WebSocket connection closed.")
-    end)
-
-    return WebSocket
-end
-
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
@@ -1869,9 +1846,13 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstant = function(f, i) 
-    return "Not Implemented"
-end 
+getgenv().debug.getconstants(func, index)
+    if type(func) ~= "function" then warn("[Exp] Must be a function pls") end
+    constantfunc = func
+    local constants = index
+    return constantfunc and constants[index] or nil, "Constant not found"
+end
+
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
 end 
