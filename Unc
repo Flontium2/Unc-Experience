@@ -555,26 +555,29 @@ end
 local hiddenProperties = {}
 
 getgenv().sethiddenproperty = function(instance, property, value)
-    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
-    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
-    
+    assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ")
+    assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ")
+
     if property == "size_xml" and instance:IsA("Fire") then
-        if not hiddenProperties[instance] then
-            hiddenProperties[instance] = {}
+        if not getgenv().hiddenProperties then
+            getgenv().hiddenProperties = {}
         end
-        hiddenProperties[instance][property] = value
+        if not getgenv().hiddenProperties[instance] then
+            getgenv().hiddenProperties[instance] = {}
+        end
+        getgenv().hiddenProperties[instance][property] = value
         return true
     end
-    
-    local success = pcall(function()
+
+    local success, result = pcall(function()
         instance[property] = value
     end)
-    
+
     if success then
-        return false
+        return true
     end
-    
-    error("Unable to set hidden property '" .. property .. "' on " .. instance.ClassName, 2)
+
+    error("Unable to set property '" .. property .. "' on " .. instance.ClassName, 2)
 end
 
 getgenv().getdevice = function()
@@ -1479,31 +1482,6 @@ end
 getgenv().getprotecteduis = function()
     return protecteduis
 end
-getgenv().getcallbackvalue = function(input)
-    if type(input) == "function" then
-        local success, result = pcall(input)
-        if success then
-            return result
-        else
-            warn("[Exp]: getcallbackvalue failed with error: " .. result)
-            return nil
-        end
-    end
-    
-    if typeof(input) == "Instance" and input:IsA("BindableFunction") then
-        local success, result = pcall(function() return input:Invoke() end)
-        if success then
-            return result
-        else
-            warn("[Exp]: OnInvoke failed with error: " .. result)
-            return nil
-        end
-    end
-    
-    warn("[Exp]: Invalid input, expected function or BindableFunction")
-    return nil
-end
-getgenv().getcallbackvalue = getcallbackvalue
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
@@ -1748,37 +1726,13 @@ getgenv().getfflag = function(fn)
     end
 end
 
-getgenv().hookfunction = newcclosure(function(originalFunction, callback)
-    assert(type(originalFunction) == "function", "Expected a function as the first argument")
-    assert(type(callback) == "function", "Expected a function as the second argument")
-
-    local hookedFunction = hookfunction(originalFunction, callback)
-
-    if not hookedFunction then
-        error("Failed to hook the function")
+function getgenv().hookfunction(old, hook)
+    local meta = debug.getmetatable(old) or {}
+    meta.__call = function(_, ...)
+        return hook(...)
     end
-
-    return hookedFunction
-end)
-getgenv().hookmetamethod = newcclosure(function(obj, method, func)
-      return hookfunction(getrawmetatable(obj)[method], func)
-end)
-
-getgenv().getrawmetatable = function(obj)
-    assert(type(obj) == "table" or typeof(obj) == "Instance", "Expected a table or Instance as input")
-
-    if typeof(obj) == "Instance" then
-        local mt = getmetatable(obj)
-        if mt then
-            return mt
-        else
-            error("Instance does not have a metatable")
-        end
-    elseif type(obj) == "table" then
-        return getmetatable(obj)
-    else
-        error("Unsupported type")
-    end
+    debug.setmetatable(old, meta)
+    return old
 end
 
 getgenv().restorefunction = function(original)
@@ -1856,9 +1810,11 @@ end
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
-getgenv().debug.getupvalue = function(f, i) 
-    return "Not Implemented"
-end 
+getgenv().debug.getupvalue = function(func, index)
+    local upvalueName, upvalueValue = debug.getupvalue(func, index)
+    return upvalueName, upvalueValue
+end
+
 getgenv().debug.getupvalues = function(f) 
     return "Not Implemented"
 end 
