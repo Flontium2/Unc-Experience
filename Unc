@@ -1506,7 +1506,6 @@ getgenv().getcallbackvalue = function(input)
     warn("[Exp]: Invalid input, expected function or BindableFunction")
     return nil
 end
-getgenv().getcallbackvalue = getcallbackvalue
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
