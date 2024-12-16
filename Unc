@@ -552,7 +552,6 @@ getgenv().gethiddenproperty = function(instance, property)
 	end
 	return oldghpr(instance, property)
 end
-
 local hiddenProperties = {}
 
 getgenv().sethiddenproperty = function(instance, property, value)
@@ -583,29 +582,7 @@ end
 
 getgenv().getdevice = function()
     return tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
-end
-
-getgenv().getnamecallmethod = function(obj)
-    assert(typeof(obj) == "Instance" or type(obj) == "table", "Expected an Instance or table")
-
-    local mt = getmetatable(obj)
-
-    if not mt then
-        error("No metatable found for this object")
-    end
-
-    local originalNamecall = mt.__namecall
-    if not originalNamecall then
-        error("No __namecall metamethod found for this object")
-    end
-
-    mt.__namecall = function(self, ...)
-        local methodName = debug.getinfo(2, "n").name
-        return methodName  -- Return the method name
-    end
-
-    return originalNamecall
-end
+end 
 
 getgenv().getping = function(suffix: boolean)
     local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
@@ -1786,35 +1763,9 @@ getgenv().hookfunction = newcclosure(function(originalFunction, callback)
 
     return hookedFunction
 end)
-getgenv().hookmetamethod = function(obj, methodName, hook)
-    assert(type(obj) == "table", "Expected a table")
-    assert(type(methodName) == "string", "Expected a string for methodName")
-    assert(type(hook) == "function", "Expected a function for hook")
-
-    local mt = getmetatable(obj)
-    if not mt then
-        error("No metatable found for this object")
-    end
-
-    if mt.__metatable then
-        error("The metatable is locked, cannot hook the method")
-    end
-
-    local originalMethod = mt[methodName]
-    if not originalMethod then
-        error("No method named '" .. methodName .. "' in the metatable")
-    end
-
-    mt[methodName] = function(self, ...)
-        local result = hook(self, ...)
-        if result ~= nil then
-            return result
-        end
-        return originalMethod(self, ...)
-    end
-
-    return originalMethod
-end
+getgenv().hookmetamethod = newcclosure(function(obj, method, func)
+      return hookfunction(getrawmetatable(obj)[method], func)
+end)
 
 getgenv().getrawmetatable = function(obj)
     assert(type(obj) == "table" or typeof(obj) == "Instance", "Expected a table or Instance as input")
@@ -1893,9 +1844,10 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstant = function(f, i) 
-    return "Not Implemented"
-end 
+getgenv().debug.getconstant = function(func, index)
+    local constant = debug.getconstant(func, index)
+    return constant
+end
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
 end 
@@ -1908,9 +1860,11 @@ end
 getgenv().debug.getstack = function(f, i) 
     return "Not Implemented"
 end 
-getgenv().debug.getupvalue = function(f, i) 
-    return "Not Implemented"
-end 
+getgenv().debug.getupvalue = function(func, index)
+    local upvalueName, upvalueValue = debug.getupvalue(func, index)
+    return upvalueName, upvalueValue
+end
+
 getgenv().debug.getupvalues = function(f) 
     return "Not Implemented"
 end 
