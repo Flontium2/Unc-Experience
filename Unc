@@ -579,8 +579,7 @@ end
 
 getgenv().getdevice = function()
     return tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
-end 
-getgenv().sethiddenproperty = sethiddenproperty
+end
 
 getgenv().getnamecallmethod = function(obj)
     assert(typeof(obj) == "Instance" or type(obj) == "table", "Expected an Instance or table")
@@ -603,7 +602,7 @@ getgenv().getnamecallmethod = function(obj)
 
     return originalNamecall
 end
-getgenv().getnamecallmethod = getnamecallmethod
+
 getgenv().getping = function(suffix: boolean)
     local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
     local pingstr = rawping:sub(1, #rawping - 7)
