@@ -1185,7 +1185,7 @@ getgenv().getrenderproperty = function(obj, property)
     return obj[property]
 end
 getgenv().cloneref = function(a)
-	local s, _ = pcall(function() return a:Clone() end) return s and _ or a
+	return a
 end
 
 getgenv().WebSocket = {}
@@ -1217,10 +1217,8 @@ WebSocket.connect = function(url)
     end }
 
     ws.OnClose = { callback = function()
-        print("WebSocket closed")
     end }
 
-    print("WebSocket connected to " .. url)
     return ws
 end
 
@@ -1501,21 +1499,27 @@ getgenv().syn.secure_call = function(func)
 	end 
 end
 getgenv().gethui = function()
-	local s, H = pcall(function()
-		return game:GetService("CoreGui").RobloxGui
-	end)
-	if H then
-		if not hui.Parent then
-			hui.Parent = H.Parent
-		end
-		return hui
-	else
-		if not hui.Parent then
-			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-		end
-	end
-	return hui
+    local hui = Instance.new("ScreenGui") -- Tạo một ScreenGui mới để đảm bảo hui là Instance
+    local success, coreGui = pcall(function()
+        return game:GetService("CoreGui")
+    end)
+
+    if success and coreGui then
+        if not hui.Parent then
+            hui.Parent = coreGui.Parent
+        end
+    else
+        local playerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+        if playerGui then
+            if not hui.Parent then
+                hui.Parent = playerGui
+            end
+        end
+    end
+
+    return hui
 end
+
 getgenv().getprotecteduis = function()
     return protecteduis
 end
