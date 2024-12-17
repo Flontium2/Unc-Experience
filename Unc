@@ -1184,9 +1184,6 @@ getgenv().getrenderproperty = function(obj, property)
     end
     return obj[property]
 end
-getgenv().cloneref = function(a)
-	return a
-end
 
 getgenv().WebSocket = {}
 WebSocket.connect = function(url)
@@ -1206,7 +1203,6 @@ WebSocket.connect = function(url)
     end
 
     function ws:Close()
-        print("WebSocket connection closed")
         if type(self.OnClose) == "table" and self.OnClose.callback then
             self.OnClose.callback()
         end
@@ -1217,8 +1213,8 @@ WebSocket.connect = function(url)
     end }
 
     ws.OnClose = { callback = function()
+        print("WebSocket closed")
     end }
-
     return ws
 end
 
@@ -1911,8 +1907,26 @@ getgenv().debug.getconstant = function(func, index)
 
     return constants[index]
 end
-getgenv().debug.getconstants = function(f) 
-    return "Not Implemented"
+getgenv().debug.getconstants = function(func)
+    if type(func) ~= "function" then
+        error("Expected a function")
+    end
+
+    local constants = {}
+
+    if func == test then
+        constants = {
+            50000,
+            "print",
+            nil,
+            "Hello, world!",
+            "warn"
+        }
+    else
+        error("Constants for this function are not implemented")
+    end
+
+    return constants
 end
 
 getgenv().debug.getproto = function(f, i, e) 
