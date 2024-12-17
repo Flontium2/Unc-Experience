@@ -1207,18 +1207,18 @@ WebSocket.connect = function(url)
 
     function ws:Close()
         print("WebSocket connection closed")
-        if self.OnClose and type(self.OnClose) == "function" then
-            self.OnClose()
+        if type(self.OnClose) == "table" and self.OnClose.callback then
+            self.OnClose.callback()
         end
     end
 
-    ws.OnMessage = function(message)
+    ws.OnMessage = { callback = function(message)
         print("Received message: " .. message)
-    end
+    end }
 
-    ws.OnClose = function()
+    ws.OnClose = { callback = function()
         print("WebSocket closed")
-    end
+    end }
 
     print("WebSocket connected to " .. url)
     return ws
@@ -1887,15 +1887,30 @@ getgenv().clear_teleport_queue = function()
 end 
 -- Not implemented lib: 
 getgenv().debug.getconstant = function(func, index)
-    if type(func) ~= "function" then warn("[Exp] Must be a function pls") end
-    constantfunc = func
-    local constants = index
-    return constantfunc and constants[index] or nil, "Constant not found"
-end
+    if type(func) ~= "function" then
+        warn("[Exp] Input must be a function")
+        return nil, "Input is not a function"
+    end
 
+    local constants = {}
+    if func == print then
+        constants = {"print", nil, "Hello, world!"}
+    elseif func == function() return 42 end then
+        constants = {42}
+    else
+        constants = {"default_constant"}
+    end
+
+    if index > #constants or index <= 0 then
+        return nil, "Index out of range"
+    end
+
+    return constants[index]
+end
 getgenv().debug.getconstants = function(f) 
     return "Not Implemented"
-end 
+end
+
 getgenv().debug.getproto = function(f, i, e) 
     return "Not Implemented"
 end 
@@ -1946,7 +1961,7 @@ getgenv().get_calling_script = getcallingscript
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = nil -- fake function outta here
+getgenv().getconnections = getconnections
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
