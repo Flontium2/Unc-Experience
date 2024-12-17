@@ -474,9 +474,9 @@ getgenv().request = function(options)
 		return protectedr  
 	end
 	if options.Headers then
-		options.Headers["User-Agent"] = "Exp/RobloxApp/0.0.2"
+		options.Headers["User-Agent"] = "Salad/RobloxApp/2.1"
 	else
-		options.Headers = {["User-Agent"] = "Exp/RobloxApp/0.0.2"}
+		options.Headers = {["User-Agent"] = "Salad/RobloxApp/2.1"}
 	end
 	local response = oldr(options)
 	if shared.httpspy then
@@ -554,7 +554,7 @@ getgenv().gethiddenproperty = function(instance, property)
 end
 local hiddenProperties = {}
 
-getgenv().sethiddenproperty = function(instance, property, value)
+function getgenv().sethiddenproperty(instance, property, value)
     assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
     assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
     
@@ -1184,40 +1184,6 @@ getgenv().getrenderproperty = function(obj, property)
     end
     return obj[property]
 end
-
-getgenv().WebSocket = {}
-WebSocket.connect = function(url)
-    if type(url) ~= "string" then
-        error("Invalid URL: Must be a string")
-    end
-
-    local ws = {}
-    ws.OnMessage = {}
-    ws.OnClose = {}
-
-    function ws:Send(message)
-        if type(message) ~= "string" then
-            error("Send: Message must be a string")
-        end
-        print("Sent message: " .. message)
-    end
-
-    function ws:Close()
-        if type(self.OnClose) == "table" and self.OnClose.callback then
-            self.OnClose.callback()
-        end
-    end
-
-    ws.OnMessage = { callback = function(message)
-        print("Received message: " .. message)
-    end }
-
-    ws.OnClose = { callback = function()
-        print("WebSocket closed")
-    end }
-    return ws
-end
-
 getgenv().getreg = function() -- yea ik ik this aint how it works, its a shitty recreation ok
     local tables = {}
     for _, value in pairs(getgenv()) do
@@ -1495,27 +1461,21 @@ getgenv().syn.secure_call = function(func)
 	end 
 end
 getgenv().gethui = function()
-    local hui = Instance.new("ScreenGui") -- Tạo một ScreenGui mới để đảm bảo hui là Instance
-    local success, coreGui = pcall(function()
-        return game:GetService("CoreGui")
-    end)
-
-    if success and coreGui then
-        if not hui.Parent then
-            hui.Parent = coreGui.Parent
-        end
-    else
-        local playerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
-        if playerGui then
-            if not hui.Parent then
-                hui.Parent = playerGui
-            end
-        end
-    end
-
-    return hui
+	local s, H = pcall(function()
+		return game:GetService("CoreGui").RobloxGui
+	end)
+	if H then
+		if not hui.Parent then
+			hui.Parent = H.Parent
+		end
+		return hui
+	else
+		if not hui.Parent then
+			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+		end
+	end
+	return hui
 end
-
 getgenv().getprotecteduis = function()
     return protecteduis
 end
@@ -1907,28 +1867,10 @@ getgenv().debug.getconstant = function(func, index)
 
     return constants[index]
 end
-getgenv().debug.getconstants = function(func)
-    if type(func) ~= "function" then
-        error("Expected a function")
-    end
 
-    local constants = {}
-
-    if func == test then
-        constants = {
-            50000,
-            "print",
-            nil,
-            "Hello, world!",
-            "warn"
-        }
-    else
-        error("Constants for this function are not implemented")
-    end
-
-    return constants
-end
-
+getgenv().debug.getconstants = function(f) 
+    return "Not Implemented"
+end 
 getgenv().debug.getproto = function(f, i, e) 
     return "Not Implemented"
 end 
@@ -1974,12 +1916,45 @@ getgenv().clonefunction = newcclosure(function(func)
     setfenv(newfunc, getfenv(func))
     return newfunc
 end)
+
+getgenv().WebSocket = {}
+WebSocket.connect = function(url)
+    if type(url) ~= "string" then
+        error("Invalid URL: Must be a string")
+    end
+
+    local ws = {}
+    ws.OnMessage = {}
+    ws.OnClose = {}
+
+    function ws:Send(message)
+        if type(message) ~= "string" then
+            error("Send: Message must be a string")
+        end
+        print("Sent message: " .. message)
+    end
+
+    function ws:Close()
+        if type(self.OnClose) == "table" and self.OnClose.callback then
+            self.OnClose.callback()
+        end
+    end
+
+    ws.OnMessage = { callback = function(message)
+        print("Received message: " .. message)
+    end }
+
+    ws.OnClose = { callback = function()
+        print("WebSocket closed")
+    end }
+    return ws
+end
 -- aliases
 getgenv().get_calling_script = getcallingscript 
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = getconnections
+getgenv().getconnections = nil -- fake function outta here
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
