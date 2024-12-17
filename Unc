@@ -1184,6 +1184,46 @@ getgenv().getrenderproperty = function(obj, property)
     end
     return obj[property]
 end
+getgenv().cloneref = function(a)
+	local s, _ = pcall(function() return a:Clone() end) return s and _ or a
+end
+
+getgenv().WebSocket = {}
+WebSocket.connect = function(url)
+    if type(url) ~= "string" then
+        error("Invalid URL: Must be a string")
+    end
+
+    local ws = {}
+    ws.OnMessage = {}
+    ws.OnClose = {}
+
+    function ws:Send(message)
+        if type(message) ~= "string" then
+            error("Send: Message must be a string")
+        end
+        print("Sent message: " .. message)
+    end
+
+    function ws:Close()
+        print("WebSocket connection closed")
+        if self.OnClose and type(self.OnClose) == "function" then
+            self.OnClose()
+        end
+    end
+
+    ws.OnMessage = function(message)
+        print("Received message: " .. message)
+    end
+
+    ws.OnClose = function()
+        print("WebSocket closed")
+    end
+
+    print("WebSocket connected to " .. url)
+    return ws
+end
+
 getgenv().getreg = function() -- yea ik ik this aint how it works, its a shitty recreation ok
     local tables = {}
     for _, value in pairs(getgenv()) do
