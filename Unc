@@ -1886,7 +1886,7 @@ getgenv().clear_teleport_queue = function()
     queue_on_teleport("")
 end 
 -- Not implemented lib: 
-getgenv().debug.getconstants(func, index)
+getgenv().debug.getconstant = function(func, index)
     if type(func) ~= "function" then warn("[Exp] Must be a function pls") end
     constantfunc = func
     local constants = index
