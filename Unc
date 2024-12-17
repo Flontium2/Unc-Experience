@@ -474,9 +474,9 @@ getgenv().request = function(options)
 		return protectedr  
 	end
 	if options.Headers then
-		options.Headers["User-Agent"] = "Salad/RobloxApp/2.1"
+		options.Headers["User-Agent"] = "Exp/RobloxApp/0.0.2"
 	else
-		options.Headers = {["User-Agent"] = "Salad/RobloxApp/2.1"}
+		options.Headers = {["User-Agent"] = "Exp/RobloxApp/0.0.2"}
 	end
 	local response = oldr(options)
 	if shared.httpspy then
@@ -579,7 +579,11 @@ end
 
 getgenv().getdevice = function()
     return tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
-end 
+end
+
+getgenv().identityexecutor = function()
+	return "Experience V0.0.2"
+end
 
 getgenv().getping = function(suffix: boolean)
     local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
@@ -1954,7 +1958,7 @@ getgenv().get_calling_script = getcallingscript
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = nil -- fake function outta here
+getgenv().getconnections = getconnections
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
