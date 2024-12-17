@@ -554,7 +554,7 @@ getgenv().gethiddenproperty = function(instance, property)
 end
 local hiddenProperties = {}
 
-function getgenv().sethiddenproperty(instance, property, value)
+getgenv().sethiddenproperty = function(instance, property, value)
     assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
     assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
     
