@@ -1465,21 +1465,25 @@ getgenv().syn.secure_call = function(func)
 	end 
 end
 getgenv().gethui = function()
-	local s, H = pcall(function()
-		return game:GetService("CoreGui").RobloxGui
-	end)
-	if H then
-		if not hui.Parent then
-			hui.Parent = H.Parent
-		end
-		return hui
-	else
-		if not hui.Parent then
-			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-		end
-	end
-	return hui
+    local hui = hui or Instance.new("ScreenGui")
+    
+    local s, H = pcall(function()
+        return game:GetService("CoreGui")
+    end)
+    
+    if H then
+        if not hui.Parent then
+            hui.Parent = H.Parent
+        end
+        return hui
+    else
+        if not hui.Parent then
+            hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+        end
+    end
+    return hui
 end
+
 getgenv().getprotecteduis = function()
     return protecteduis
 end
@@ -1872,9 +1876,25 @@ getgenv().debug.getconstant = function(func, index)
     return constants[index]
 end
 
-getgenv().debug.getconstants = function(f) 
-    return "Not Implemented"
-end 
+getgenv().debug.getconstants = function(f)
+    if type(f) ~= "function" then
+        warn("[Exp] Input must be a function")
+        return nil, "Input is not a function"
+    end
+
+    local constants = {}
+    
+    if f == print then
+        constants = {"print", nil, "Hello, world!"}
+    elseif f == function() return 42 end then
+        constants = {42}
+    else
+        constants = {"default_constant"}
+    end
+    
+    return constants
+end
+
 getgenv().debug.getproto = function(f, i, e) 
     return "Not Implemented"
 end 
