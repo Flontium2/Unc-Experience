@@ -1517,7 +1517,38 @@ getgenv().getcallbackvalue = function(input)
     return nil
 end
 getgenv().getcallbackvalue = getcallbackvalue
+getgenv().WebSocket = {}
+WebSocket.connect = function(url)
+    if type(url) ~= "string" then
+        error("Invalid URL: Must be a string")
+    end
 
+    local ws = {}
+    ws.OnMessage = {}
+    ws.OnClose = {}
+
+    function ws:Send(message)
+        if type(message) ~= "string" then
+            error("Send: Message must be a string")
+        end
+        print("Sent message: " .. message)
+    end
+
+    function ws:Close()
+        if type(self.OnClose) == "table" and self.OnClose.callback then
+            self.OnClose.callback()
+        end
+    end
+
+    ws.OnMessage = { callback = function(message)
+        print("Received message: " .. message)
+    end }
+
+    ws.OnClose = { callback = function()
+        print("WebSocket closed")
+    end }
+    return ws
+end
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
     for _, player in pairs(game.Players:GetPlayers()) do
