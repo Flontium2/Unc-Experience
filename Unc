@@ -1877,22 +1877,7 @@ getgenv().debug.getconstant = function(func, index)
 end
 
 getgenv().debug.getconstants = function(f)
-    if type(f) ~= "function" then
-        warn("[Exp] Input must be a function")
-        return nil, "Input is not a function"
-    end
-
-    local constants = {}
-    
-    if f == print then
-        constants = {"print", nil, "Hello, world!"}
-    elseif f == function() return 42 end then
-        constants = {42}
-    else
-        constants = {"default_constant"}
-    end
-    
-    return constants
+	return "Not Implemented"
 end
 
 getgenv().debug.getproto = function(f, i, e) 
