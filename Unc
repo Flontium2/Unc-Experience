@@ -650,21 +650,6 @@ getgenv().join = function(placeID: number, jobID: string)
     game:GetService("TeleportService"):TeleportToPlaceInstance(placeID, jobID, getplayer())
 end
 
-getgenv().fireproximityprompt = function(obj)
-    local camera = workspace.Camera
-    local virtual = game:GetService("VirtualInputManager")
-
-    obj.Enabled = true
-    obj.HoldDuration = 0
-    obj.RequiresLineOfSight = false
-    obj.MaxActivationDistance = math.huge
-    workspace.Camera.CFrame = CFrame.new(workspace.Camera.CFrame.Position, obj.Parent.Position)
-    virtual:SendKeyEvent(true, obj.KeyboardKeyCode, false, game)
-    virtual:SendKeyEvent(false, obj.KeyboardKeyCode, false, game)
-    task.wait()
-    obj.MaxActivationDistance = 10
-end
-
 --[[ no getconnections moment
 getgenv().getconnections = function(obj)
     if not obj then
@@ -1772,22 +1757,18 @@ getgenv().getfflag = function(fn)
     end
 end
 
-local originalFunctions = {}
-
-getgenv().hookfunction = getgenv().hookfunction or function(originalFunction, newFunction)
+getgenv().hookfunction = newcclosure(function(originalFunction, callback)
     assert(type(originalFunction) == "function", "Expected a function as the first argument")
-    assert(type(newFunction) == "function", "Expected a function as the second argument")
-    
-    local oldFunction = originalFunction
+    assert(type(callback) == "function", "Expected a function as the second argument")
 
-    local hookedFunction = function(...)
-        return newFunction(...)
+    local hookedFunction = hookfunction(originalFunction, callback)
+
+    if not hookedFunction then
+        error("Failed to hook the function")
     end
 
-    setmetatable(hookedFunction, { __index = oldFunction })
     return hookedFunction
-end
-
+end)
 getgenv().hookmetamethod = newcclosure(function(object, method, callback)
     assert(type(object) == "table" or type(object) == "userdata", "Expected a table or userdata as the first argument")
     assert(type(method) == "string", "Expected a string as the second argument")
@@ -1810,6 +1791,8 @@ getgenv().hookmetamethod = newcclosure(function(object, method, callback)
         return originalMethod
     end
 end)
+getgenv().hookmetamethod = hookmetamethod
+getgenv().hookfunction = hookfunction
 
 getgenv().restorefunction = function(original)
     if type(original) ~= "function" then
