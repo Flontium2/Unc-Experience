@@ -487,9 +487,9 @@ getgenv().request = function(options)
 		return protectedr  
 	end
 	if options.Headers then
-		options.Headers["User-Agent"] = "Salad/RobloxApp/2.1"
+		options.Headers["User-Agent"] = "Exp/RobloxApp/0.0.3"
 	else
-		options.Headers = {["User-Agent"] = "Salad/RobloxApp/2.1"}
+		options.Headers = {["User-Agent"] = "Exp/RobloxApp/0.0.3"}
 	end
 	local response = oldr(options)
 	if shared.httpspy then
