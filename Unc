@@ -1544,10 +1544,13 @@ WebSocket.connect = function(url)
         print("Received message: " .. message)
     end }
 
-    ws.OnClose = { callback = function()
-        print("WebSocket closed")
+    ws.OnClose = { callback = function() 
+        print("closed")
     end }
     return ws
+end
+getgenv().identityexecutor = function()
+	return "Experience V0.0.3"
 end
 -- Salad Custom Functions
 getgenv().salad.get_player_by_name = function(name)
