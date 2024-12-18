@@ -467,16 +467,29 @@ function XenoBridge:rconsole(_type, content)
 	return result ~= nil
 end
 -- env 
+getgenv().fireproximityprompt = function(obj)
+    local camera = workspace.Camera
+    local virtual = game:GetService("VirtualInputManager")
 
+    obj.Enabled = true
+    obj.HoldDuration = 0
+    obj.RequiresLineOfSight = false
+    obj.MaxActivationDistance = math.huge
+    workspace.Camera.CFrame = CFrame.new(workspace.Camera.CFrame.Position, obj.Parent.Position)
+    virtual:SendKeyEvent(true, obj.KeyboardKeyCode, false, game)
+    virtual:SendKeyEvent(false, obj.KeyboardKeyCode, false, game)
+    task.wait()
+    obj.MaxActivationDistance = 10
+end
 getgenv().request = function(options)
 	if shared.antilogger and urlblockcheck(options.Url) then
 		warn("[ Salad ]: A script tried to get your IP; URL: ", options.Url)
 		return protectedr  
 	end
 	if options.Headers then
-		options.Headers["User-Agent"] = "Exp/RobloxApp/0.0.2"
+		options.Headers["User-Agent"] = "Salad/RobloxApp/2.1"
 	else
-		options.Headers = {["User-Agent"] = "Exp/RobloxApp/0.0.2"}
+		options.Headers = {["User-Agent"] = "Salad/RobloxApp/2.1"}
 	end
 	local response = oldr(options)
 	if shared.httpspy then
@@ -554,7 +567,7 @@ getgenv().gethiddenproperty = function(instance, property)
 end
 local hiddenProperties = {}
 
-getgenv().sethiddenproperty = function(instance, property, value)
+function getgenv().sethiddenproperty(instance, property, value)
     assert(typeof(instance) == "Instance", "invalid argument #1 to 'sethiddenproperty' (Instance expected, got " .. typeof(instance) .. ") ", 2) 
     assert(type(property) == "string", "invalid argument #2 to 'sethiddenproperty' (string expected, got " .. type(property) .. ") ", 2)
     
@@ -579,11 +592,7 @@ end
 
 getgenv().getdevice = function()
     return tostring(game:GetService("UserInputService"):GetPlatform()):split(".")[3]
-end
-
-getgenv().identityexecutor = function()
-	return "Experience V0.0.2"
-end
+end 
 
 getgenv().getping = function(suffix: boolean)
     local rawping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
@@ -1465,25 +1474,21 @@ getgenv().syn.secure_call = function(func)
 	end 
 end
 getgenv().gethui = function()
-    local hui = hui or Instance.new("ScreenGui")
-    
-    local s, H = pcall(function()
-        return game:GetService("CoreGui")
-    end)
-    
-    if H then
-        if not hui.Parent then
-            hui.Parent = H.Parent
-        end
-        return hui
-    else
-        if not hui.Parent then
-            hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-        end
-    end
-    return hui
+	local s, H = pcall(function()
+		return game:GetService("CoreGui").RobloxGui
+	end)
+	if H then
+		if not hui.Parent then
+			hui.Parent = H.Parent
+		end
+		return hui
+	else
+		if not hui.Parent then
+			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+		end
+	end
+	return hui
 end
-
 getgenv().getprotecteduis = function()
     return protecteduis
 end
@@ -1876,10 +1881,9 @@ getgenv().debug.getconstant = function(func, index)
     return constants[index]
 end
 
-getgenv().debug.getconstants = function(f)
-	return "Not Implemented"
-end
-
+getgenv().debug.getconstants = function(f) 
+    return "Not Implemented"
+end 
 getgenv().debug.getproto = function(f, i, e) 
     return "Not Implemented"
 end 
@@ -1925,43 +1929,12 @@ getgenv().clonefunction = newcclosure(function(func)
     setfenv(newfunc, getfenv(func))
     return newfunc
 end)
-
-getgenv().WebSocket = {}
-WebSocket.connect = function(url)
-    if type(url) ~= "string" then
-        error("Invalid URL: Must be a string")
-    end
-
-    local ws = {}
-    ws.OnMessage = {}
-    ws.OnClose = {}
-
-    function ws:Send(message)
-        if type(message) ~= "string" then
-            error("Send: Message must be a string")
-        end
-        print("Sent message: " .. message)
-    end
-
-    function ws:Close()
-        if type(self.OnClose) == "table" and self.OnClose.callback then
-            self.OnClose.callback()
-        end
-    end
-
-    ws.OnMessage = { callback = function(message)
-        print("Received message: " .. message)
-    end }
-
-    ws.OnClose = { callback = function() end }
-    return ws
-end
 -- aliases
 getgenv().get_calling_script = getcallingscript 
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = getconnections
+getgenv().getconnections = nil -- fake function outta here
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
