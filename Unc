@@ -1474,20 +1474,23 @@ getgenv().syn.secure_call = function(func)
 	end 
 end
 getgenv().gethui = function()
-	local s, H = pcall(function()
-		return game:GetService("CoreGui").RobloxGui
-	end)
-	if H then
-		if not hui.Parent then
-			hui.Parent = H.Parent
-		end
-		return hui
-	else
-		if not hui.Parent then
-			hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-		end
-	end
-	return hui
+    local hui = hui or Instance.new("ScreenGui")
+    
+    local s, H = pcall(function()
+        return game:GetService("CoreGui")
+    end)
+    
+    if H then
+        if not hui.Parent then
+            hui.Parent = H.Parent
+        end
+        return hui
+    else
+        if not hui.Parent then
+            hui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+        end
+    end
+    return hui
 end
 getgenv().getprotecteduis = function()
     return protecteduis
@@ -1968,7 +1971,7 @@ getgenv().get_calling_script = getcallingscript
 getgenv().isreadable = isreadonly 
 getgenv().isexecclosure = isexecutorclosure
 getgenv().is_executor_closure = isexecclosure
-getgenv().getconnections = nil -- fake function outta here
+getgenv().getconnections = getconnections
 getgenv().clonefunc = clonefunction
 getgenv().get_scripts = getrunningscripts
 getgenv().getmodules = getloadedmodules
